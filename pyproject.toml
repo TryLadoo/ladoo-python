@@ -1,0 +1,85 @@
+[project]
+name = "ladoo"
+version = "0.1.0"
+description = "Python library for the Ladoo API: calls, people, agents, bookings and signed webhooks."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Ladoo LLC" }]
+requires-python = ">=3.9"
+dependencies = [
+    "httpx>=0.25,<1",
+    "typing-extensions>=4.7",
+]
+keywords = ["ladoo", "ai receptionist", "voice agent", "api", "webhooks"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://tryladoo.com/docs/developers"
+Documentation = "https://tryladoo.com/docs/developers"
+Source = "https://github.com/TryLadoo/ladoo-python"
+Changelog = "https://github.com/TryLadoo/ladoo-python/blob/main/CHANGELOG.md"
+Issues = "https://github.com/TryLadoo/ladoo-python/issues"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pyright>=1.1.380",
+]
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ladoo"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/ladoo", "tests", "openapi", "scripts", "README.md", "CHANGELOG.md", "LICENSE"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["UP006", "UP007", "UP035", "UP045", "RUF022"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/ladoo/types/_generated.py" = ["E501", "RUF001", "RUF002"]
+"src/ladoo/resources/*.py" = ["E501", "RUF001", "RUF002"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["live: calls the real API; runs only when LADOO_API_KEY is set"]
+
+[tool.mypy]
+strict = true
+files = ["src/ladoo", "tests"]
+mypy_path = "scripts"
+
+[tool.pyright]
+include = ["src/ladoo", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.9"
+extraPaths = ["scripts"]

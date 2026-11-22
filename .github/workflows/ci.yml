@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Lint
+        if: matrix.python == '3.14'
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Generated code is up to date
+        if: matrix.python == '3.14'
+        run: uv run python scripts/generate.py --check
+      - name: Typecheck
+        if: matrix.python == '3.14'
+        run: |
+          uv run pyright
+          uv run mypy
+      - name: Test
+        run: uv run pytest
